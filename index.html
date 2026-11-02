@@ -1,9 +1,9 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Scrivi</title>
+<title>Scrivo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-  /* Layout: sticky tab bar, hero with a drawn app window on an A4 sheet, ruled sections, dark download band. */
+  /* Layout: sticky tab bar; site view (hero with drawn A4 window, ruled highlights, licence, dark download band) and a #prova view with a working limited editor. */
   :root {
     --bg: #f5f7fa;
     --surface: #ffffff;
@@ -24,6 +24,9 @@
     --app-ribbon: #f3f3f3;
     --app-line: #d4d4d4;
     --app-desk: #e6e6e6;
+    --app-ink: #222222;
+    --app-hover: #e1e1e1;
+    --app-on: #cfdcf0;
     --font-display: "Bricolage Grotesque", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
     --font-body: "IBM Plex Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -75,14 +78,15 @@
   }
   nav a:hover { color: var(--ink); border-color: var(--line); }
   nav a[aria-current="true"] { color: var(--ink); background: var(--surface); border-color: var(--line); }
+  nav a.try { color: var(--ink); border-color: var(--ink); font-weight: 500; }
   nav a.dl { background: var(--btn-bg); color: var(--btn-fg); font-weight: 500; }
   nav a.dl:hover { color: var(--btn-fg); border-color: var(--btn-bg); }
 
   section { scroll-margin-top: 110px; }
-  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 1.08; margin: 0; text-wrap: balance; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 1.08; margin: 0; text-wrap: balance; }
   .label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
   p { margin: 0; }
-  .measure { max-width: 62ch; }
+  kbd { font-family: var(--font-mono); font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
 
   /* Hero */
   .hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; align-items: center; padding-block: 56px 72px; }
@@ -90,13 +94,15 @@
   .hero .lead { margin-top: 22px; font-size: 19px; color: var(--muted); max-width: 46ch; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
   .btn {
-    display: inline-block; font-family: var(--font-body); font-weight: 600; font-size: 16px; text-decoration: none;
+    display: inline-block; font-family: var(--font-body); font-weight: 600; font-size: 16px; text-decoration: none; cursor: pointer;
     padding: 13px 22px; border-radius: 8px; border: 2px solid var(--btn-bg); background: var(--btn-bg); color: var(--btn-fg);
   }
   .btn:hover { transform: translateY(-1px); }
   .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
   .btn.ghost:hover { border-color: var(--ink); }
   .meta { margin-top: 22px; font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+  .licence-flag { margin-top: 14px; display: inline-block; font-size: 15px; padding: 8px 12px; border-radius: 6px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
+  .licence-flag a { color: var(--on-accent); }
 
   /* Drawn app window */
   .figure { min-width: 0; }
@@ -105,15 +111,15 @@
   .app .title::before { content: ""; position: absolute; left: 12px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: #ff5f57; box-shadow: 16px 0 0 #febc2e, 32px 0 0 #28c840; }
   .app .title b { font-weight: 600; }
   .app .title span { opacity: 0.8; }
-  .app .tabs { background: var(--app-bar); display: flex; gap: 2px; padding: 0 10px; font-size: 12px; }
-  .app .tabs i { font-style: normal; color: #fff; padding: 5px 12px; border-radius: 4px 4px 0 0; }
+  .app .tabs { background: var(--app-bar); display: flex; gap: 2px; padding: 0 10px; font-size: 12px; flex-wrap: wrap; }
+  .app .tabs i { font-style: normal; color: #fff; padding: 5px 9px; border-radius: 4px 4px 0 0; }
   .app .tabs i.on { background: var(--app-ribbon); color: var(--app-bar); }
-  .app .ribbon { background: var(--app-ribbon); border-bottom: 1px solid var(--app-line); padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 12px; color: #222; }
+  .app .ribbon { background: var(--app-ribbon); border-bottom: 1px solid var(--app-line); padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 12px; color: var(--app-ink); }
   .app .ribbon .g { display: flex; gap: 4px; align-items: center; padding-right: 12px; border-right: 1px solid var(--app-line); }
   .app .ribbon .g:last-child { border: 0; padding: 0; }
   .app .chip { background: #fff; border: 1px solid var(--app-line); border-radius: 4px; padding: 1px 8px; min-height: 22px; display: inline-flex; align-items: center; }
   .app .key { width: 24px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; }
-  .app .key.on { background: #cfdcf0; border: 1px solid #9db6dd; }
+  .app .key.on { background: var(--app-on); border: 1px solid #9db6dd; }
   .app .sw { width: 18px; height: 18px; border-radius: 3px; border: 1px solid var(--app-line); }
   .desk { padding: 22px 18px 24px; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; gap: 6px 8px; justify-content: center; }
   .dim-h { grid-column: 2; display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #555; width: min(100%, 300px); margin: 0 auto; }
@@ -125,7 +131,7 @@
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3); padding: 12%; position: relative; font-family: Georgia, "Times New Roman", serif; font-size: 11px; line-height: 1.5; overflow: hidden;
   }
   .sheet::after { content: ""; position: absolute; inset: 7.5% 9%; border: 1px dashed rgba(43, 87, 154, 0.35); pointer-events: none; }
-  .sheet h4 { font-family: Georgia, serif; font-size: 17px; margin: 0 0 8px; line-height: 1.15; }
+  .sheet h4 { font-family: Georgia, serif; font-size: 17px; margin: 0 0 8px; line-height: 1.15; letter-spacing: 0; }
   .sheet p { margin: 0 0 7px; }
   .sheet mark { background: #ffe94d; color: inherit; }
   .sheet ul { margin: 0 0 7px; padding-left: 16px; }
@@ -142,14 +148,11 @@
   .block h2 { font-size: clamp(30px, 4.4vw, 46px); font-weight: 800; margin-bottom: 18px; }
   .block .intro { color: var(--muted); max-width: 62ch; }
 
-  .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px 36px; margin-top: 44px; }
+  .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 40px 36px; margin-top: 44px; }
   .group { border-top: 3px solid var(--ink); padding-top: 14px; min-width: 0; }
-  .group h3 { font-size: 24px; margin-bottom: 4px; }
-  .group .sub { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 14px; }
-  .group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 16px; }
-  .group li { padding-left: 16px; position: relative; }
-  .group li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 8px; height: 2px; background: var(--ink); }
-  kbd { font-family: var(--font-mono); font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+  .group h3 { font-size: 24px; margin-bottom: 8px; }
+  .group p { color: var(--muted); font-size: 16px; }
+  .more { margin-top: 36px; color: var(--muted); max-width: 62ch; }
 
   .steps { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 0; counter-reset: s; max-width: 760px; }
   .steps li { counter-increment: s; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; padding-block: 20px; border-top: 1px solid var(--line); }
@@ -163,6 +166,11 @@
   .first { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin-top: 56px; }
   .first h3 { font-size: 20px; margin-bottom: 6px; }
   .first p { color: var(--muted); font-size: 16px; }
+
+  /* Licence */
+  .mailbox { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+  .mail { font-family: var(--font-mono); font-size: clamp(16px, 3.6vw, 24px); padding: 14px 18px; border: 2px solid var(--ink); border-radius: 8px; background: var(--surface); overflow-wrap: anywhere; user-select: all; }
+  .copied { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-height: 1.2em; margin-top: 8px; }
 
   details { border-top: 1px solid var(--line); max-width: 800px; }
   details:last-of-type { border-bottom: 1px solid var(--line); }
@@ -179,12 +187,59 @@
   .download p { color: var(--band-muted); max-width: 56ch; }
   .download p + p { margin-top: 10px; }
   .download a.inline { color: var(--accent); }
+  .download .need { color: var(--band-fg); }
   .dl-btn { display: inline-block; text-align: center; background: var(--accent); color: var(--on-accent); font-weight: 600; font-size: 18px; padding: 18px 30px; border-radius: 10px; text-decoration: none; }
   .dl-btn small { display: block; font-family: var(--font-mono); font-weight: 400; font-size: 12px; margin-top: 2px; opacity: 0.8; }
   .dl-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
   .download :focus-visible { outline-color: var(--accent); }
 
-  footer { padding-block: 56px 44px; color: var(--muted); font-size: 14px; max-width: 70ch; }
+  footer { padding-block: 56px 44px; color: var(--muted); font-size: 14px; max-width: 70ch; margin: 0 auto; }
+
+  /* Online trial view */
+  .try-head { padding-block: 44px 28px; }
+  .try-head h1 { font-size: clamp(34px, 5.4vw, 58px); font-weight: 800; }
+  .try-head p.lead { margin-top: 14px; color: var(--muted); max-width: 62ch; font-size: 18px; }
+  .live { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 18px 40px -18px rgba(10, 20, 45, 0.45); background: var(--app-desk); }
+  .l-title { background: var(--app-bar); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; padding: 8px 12px; font-size: 13px; }
+  .l-title b { font-weight: 600; }
+  .l-title span.sub { opacity: 0.8; margin-left: 8px; }
+  .l-title .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .l-title button { background: rgba(255, 255, 255, 0.14); color: #fff; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 5px; padding: 3px 10px; font: inherit; cursor: pointer; }
+  .l-title button:hover { background: rgba(255, 255, 255, 0.26); }
+  .l-title button:focus-visible { outline-color: #fff; }
+  .l-tabs { background: var(--app-bar); display: flex; gap: 2px; padding: 0 10px; font-size: 12px; flex-wrap: wrap; }
+  .l-tabs span { color: #fff; padding: 5px 12px; border-radius: 4px 4px 0 0; opacity: 0.55; cursor: default; }
+  .l-tabs span.on { background: var(--app-ribbon); color: var(--app-bar); opacity: 1; }
+  .l-ribbon { background: var(--app-ribbon); border-bottom: 1px solid var(--app-line); padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 6px 4px; align-items: center; color: var(--app-ink); font-size: 13px; }
+  .l-g { display: flex; gap: 2px; align-items: center; padding-right: 8px; margin-right: 4px; border-right: 1px solid var(--app-line); }
+  .l-g:last-child { border: 0; margin: 0; padding: 0; }
+  .tb { height: 30px; min-width: 30px; border: 1px solid transparent; background: transparent; border-radius: 4px; cursor: pointer; font: inherit; color: var(--app-ink); padding: 0 7px; }
+  .tb:hover { background: var(--app-hover); border-color: var(--app-line); }
+  .tb.on { background: var(--app-on); border-color: #9db6dd; }
+  .tb:focus-visible, .sel:focus-visible, .col:focus-within { outline: 2px solid var(--app-bar); outline-offset: 1px; }
+  .sel { height: 30px; border: 1px solid var(--app-line); background: #fff; color: var(--app-ink); border-radius: 4px; font: inherit; padding: 0 6px; max-width: 130px; }
+  .col { display: inline-flex; align-items: center; justify-content: center; height: 30px; width: 30px; border: 1px solid var(--app-line); background: #fff; border-radius: 4px; position: relative; cursor: pointer; font-weight: 700; color: var(--app-ink); }
+  .col input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; padding: 0; border: 0; }
+  .col i { position: absolute; left: 5px; right: 5px; bottom: 3px; height: 4px; border-radius: 1px; }
+  .l-desk { padding: 26px 12px 30px; display: flex; justify-content: center; }
+  .page {
+    width: min(100%, 794px); min-height: 560px; background: var(--paper); color: var(--paper-ink);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3); padding: clamp(22px, 8vw, 80px); outline: none;
+    font-family: Georgia, "Times New Roman", serif; font-size: 16px; line-height: 1.55; overflow-wrap: anywhere;
+  }
+  .page h1 { font-family: Georgia, serif; font-size: 30px; line-height: 1.15; margin: 0 0 12px; letter-spacing: 0; }
+  .page h2 { font-family: Georgia, serif; font-size: 23px; line-height: 1.2; margin: 18px 0 8px; letter-spacing: 0; }
+  .page h3 { font-family: Georgia, serif; font-size: 18px; line-height: 1.25; margin: 14px 0 6px; letter-spacing: 0; }
+  .page p, .page div { margin: 0 0 10px; }
+  .page blockquote { margin: 10px 0; padding-left: 14px; border-left: 3px solid #9aa7bd; color: #444; font-style: italic; }
+  .page ul, .page ol { margin: 0 0 10px; padding-left: 26px; }
+  .l-status { background: var(--app-bar); color: #fff; display: flex; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; padding: 5px 12px; font-size: 12px; }
+  .compare { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px 40px; }
+  .compare h3 { font-size: 22px; margin-bottom: 10px; }
+  .compare ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 16px; color: var(--muted); }
+  .compare li { padding-left: 16px; position: relative; }
+  .compare li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 8px; height: 2px; background: var(--ink); }
+  .compare .cta { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; }
 
   @media (max-width: 860px) {
     .hero { grid-template-columns: minmax(0, 1fr); gap: 36px; padding-block: 36px 52px; }
@@ -197,46 +252,51 @@
     .desk { padding: 16px 10px 18px; }
     .steps li { grid-template-columns: 40px minmax(0, 1fr); }
     .dl-btn { display: block; }
+    .l-desk { padding: 14px 6px 18px; }
   }
 </style>
 
 <header class="bar">
   <div class="wrap">
-    <a class="brand" href="#panoramica"><span>Scrivi</span></a>
+    <a class="brand" href="#panoramica"><span>Scrivo</span></a>
     <nav aria-label="Sezioni del sito">
       <a href="#panoramica" data-tab>Panoramica</a>
       <a href="#funzioni" data-tab>Funzioni</a>
       <a href="#installazione" data-tab>Installazione</a>
+      <a href="#licenza" data-tab>Licenza</a>
       <a href="#domande" data-tab>Domande</a>
+      <a href="#prova" data-tab class="try">Prova ora Scrivo</a>
       <a href="#scarica" data-tab class="dl">Scarica</a>
     </nav>
   </div>
 </header>
 
-<main class="wrap">
+<div id="site-view" class="wrap">
+<main>
 
   <section id="panoramica">
     <div class="hero">
       <div>
         <p class="label">Videoscrittura per macOS</p>
         <h1>Un foglio A4 sempre aperto sul tuo Mac.</h1>
-        <p class="lead">Scrivi è un programma per scrivere lettere, relazioni e appunti. Ha la pagina A4, la barra con le schede e gli strumenti di formattazione che servono nel lavoro di tutti i giorni.</p>
+        <p class="lead">Scrivo √® un programma per scrivere lettere, relazioni e tesi. Ha la barra con le schede, tabelle, sommario, note a pi√® di pagina e salva i documenti in formato .docx.</p>
         <div class="actions">
-          <a class="btn" href="#scarica">Scarica Scrivi</a>
-          <a class="btn ghost" href="#funzioni">Vedi le funzioni</a>
+          <a class="btn" href="#prova">Prova ora Scrivo</a>
+          <a class="btn ghost" href="#scarica">Scarica per Mac</a>
         </div>
-        <p class="meta">macOS · Windows in arrivo · funziona senza connessione</p>
+        <p class="meta">macOS ¬∑ Windows in arrivo ¬∑ versione di prova online</p>
+        <p class="licence-flag">Per usare Scrivo sul Mac serve una licenza. <a href="#licenza">Come ottenerla</a></p>
       </div>
 
       <div class="figure">
-        <div class="app" role="img" aria-label="Illustrazione della finestra di Scrivi con la barra delle schede e una pagina A4 con un documento di esempio">
-          <div class="title"><b>Scrivi</b><span>Relazione.docx</span></div>
-          <div class="tabs"><i class="on">Home</i><i>Inserisci</i><i>Layout</i></div>
+        <div class="app" role="img" aria-label="Illustrazione della finestra di Scrivo con la barra delle schede e una pagina A4 con un documento di esempio">
+          <div class="title"><b>Scrivo</b><span>Relazione.docx</span></div>
+          <div class="tabs"><i class="on">Home</i><i>Inserisci</i><i>Layout</i><i>Riferimenti</i><i>Revisione</i><i>Visualizza</i></div>
           <div class="ribbon">
             <div class="g"><span class="chip">Georgia</span><span class="chip">12</span></div>
             <div class="g"><span class="key"><b>G</b></span><span class="key"><i>C</i></span><span class="key on"><u>S</u></span><span class="sw" style="background:#c0392b"></span><span class="sw" style="background:#ffe94d"></span></div>
-            <div class="g"><span class="key">•&#8202;≡</span><span class="key">1.&#8202;≡</span></div>
-            <div class="g"><span class="key">⯇</span><span class="key on">≡</span><span class="key">⯈</span><span class="key">☰</span></div>
+            <div class="g"><span class="key">‚Ä¢&#8202;‚â°</span><span class="key">1.&#8202;‚â°</span></div>
+            <div class="g"><span class="key">‚Øá</span><span class="key on">‚â°</span><span class="key">‚Øà</span><span class="key">‚ò∞</span></div>
             <div class="g"><span class="chip">Titolo 1</span></div>
           </div>
           <div class="desk">
@@ -251,93 +311,76 @@
             </div>
           </div>
         </div>
-        <p class="caption">Illustrazione dell'interfaccia. Il foglio è in scala A4.</p>
+        <p class="caption">Illustrazione dell'interfaccia. Il foglio √® in scala A4.</p>
       </div>
     </div>
 
     <div class="facts">
       <div>
-        <h3>Pagina A4</h3>
-        <p>Scrivi su un foglio con margini e interlinea regolabili, con lo zoom da 50 a 200 per cento.</p>
+        <h3>Pagina su misura</h3>
+        <p>Formato A4, A5, Letter o Legal, margini regolabili, da una a tre colonne e zoom da 50 a 200 per cento.</p>
       </div>
       <div>
         <h3>Salva e riprendi</h3>
-        <p>Il documento si salva in un file .docx che puoi riaprire in Scrivi per continuare a scrivere, con testo, formattazione e immagini.</p>
+        <p>Il documento si salva in un file .docx che puoi riaprire in Scrivo per continuare a scrivere, con testo, formattazione e immagini.</p>
       </div>
       <div>
         <h3>Esporta e stampa</h3>
-        <p>Con un clic crei un PDF del documento, oppure lo mandi in stampa con la scorciatoia <kbd>⌘P</kbd>.</p>
+        <p>Esporti in PDF, HTML o testo semplice, oppure stampi con la scorciatoia <kbd>‚åòP</kbd>.</p>
       </div>
     </div>
   </section>
 
   <section id="funzioni" class="block">
     <p class="label">Funzioni</p>
-    <h2>Tutto quello che c'è nelle schede</h2>
-    <p class="intro">Gli strumenti sono divisi in tre schede, come nei programmi di videoscrittura più diffusi. Le funzioni di file e di visualizzazione sono nel menu e nella barra in basso.</p>
+    <h2>Gli strumenti che usi di pi√π</h2>
+    <p class="intro">Una selezione di quello che trovi in Scrivo. La guida dentro al programma, con 69 voci e ricerca, spiega tutti i pulsanti.</p>
 
     <div class="groups">
       <div class="group">
-        <h3>Home</h3>
-        <p class="sub">Testo e paragrafo</p>
-        <ul>
-          <li>Sette caratteri: Calibri, Arial, Helvetica Neue, Georgia, Times New Roman, Courier New, Verdana</li>
-          <li>Sei dimensioni, da 10 a 36</li>
-          <li>Grassetto, corsivo, sottolineato e barrato</li>
-          <li>Colore del testo ed evidenziatore</li>
-          <li>Elenchi puntati e numerati, con rientro</li>
-          <li>Allineamento a sinistra, al centro, a destra e giustificato</li>
-          <li>Stili Titolo 1, 2, 3 e Citazione</li>
-          <li>Annulla e ripeti</li>
-        </ul>
+        <h3>Scrivere e formattare</h3>
+        <p>Tutti i font installati sul Mac, stili per titoli e citazioni, elenchi, bordi, interlinea e colori per il testo.</p>
       </div>
       <div class="group">
-        <h3>Inserisci</h3>
-        <p class="sub">Contenuti nella pagina</p>
-        <ul>
-          <li>Immagini dal tuo Mac, incorporate nel documento</li>
-          <li>Linea orizzontale per separare le parti del testo</li>
-        </ul>
+        <h3>Tabelle e immagini</h3>
+        <p>Tabelle con celle unite, immagini trascinate sulla pagina, forme e grafici a barre, linee e torta.</p>
       </div>
       <div class="group">
-        <h3>Layout</h3>
-        <p class="sub">Aspetto della pagina</p>
-        <ul>
-          <li>Margini normali, stretti o larghi</li>
-          <li>Interlinea 1,0, 1,15, 1,5 o 2,0</li>
-        </ul>
+        <h3>Tesi e relazioni</h3>
+        <p>Sommario, note a pi√® di pagina, citazioni, bibliografia e didascalie numerate.</p>
       </div>
       <div class="group">
-        <h3>File e vista</h3>
-        <p class="sub">Menu e barra di stato</p>
-        <ul>
-          <li>Nuovo documento <kbd>⌘N</kbd></li>
-          <li>Apri <kbd>⌘O</kbd> e Salva <kbd>⌘S</kbd> in formato .docx</li>
-          <li>Esporta in PDF</li>
-          <li>Stampa <kbd>⌘P</kbd></li>
-          <li>Zoom da 50 a 200 per cento</li>
-          <li>Conteggio delle parole sempre visibile</li>
-        </ul>
+        <h3>Revisione</h3>
+        <p>Ortografia, commenti, traccia modifiche e lettura ad alta voce del testo.</p>
+      </div>
+      <div class="group">
+        <h3>Salvare ed esportare</h3>
+        <p>Salvi in .docx, esporti in PDF, HTML o testo semplice. La bozza automatica ti permette di recuperare il documento.</p>
+      </div>
+      <div class="group">
+        <h3>Aiuto sempre a portata</h3>
+        <p>Il campo ¬´Cosa vuoi fare?¬ª trova i comandi, <kbd>F1</kbd> apre la guida e un assistente risponde alle tue domande senza internet.</p>
       </div>
     </div>
+    <p class="more">E ancora: intestazioni e numeri di pagina, filigrana, tema scuro, modalit√† focus e schermo intero.</p>
   </section>
 
   <section id="installazione" class="block">
     <p class="label">Installazione</p>
     <h2>Pronto in cinque passi</h2>
-    <p class="intro">Scrivi si installa con un pacchetto <b>.pkg</b>, come la maggior parte dei programmi per Mac che non vengono dall'App Store.</p>
+    <p class="intro">Scrivo si installa con un pacchetto <b>.pkg</b>, come la maggior parte dei programmi per Mac che non vengono dall'App Store.</p>
 
     <ol class="steps">
       <li>
         <div>
           <h3>Scarica il pacchetto</h3>
-          <p>Vai alla sezione <a href="#scarica">Scarica</a> e salva il file con estensione .pkg nella cartella Download.</p>
+          <p>Vai alla sezione <a href="#scarica">Scarica</a> e salva il file con estensione .pkg nella cartella Download. Scarica sempre la versione pi√π recente.</p>
         </div>
       </li>
       <li>
         <div>
           <h3>Aprilo con un doppio clic</h3>
-          <p>Se macOS dice che non può verificare lo sviluppatore, chiudi il messaggio, fai clic destro (o Ctrl+clic) sul file e scegli Apri.</p>
+          <p>Se macOS dice che non pu√≤ verificare lo sviluppatore, chiudi il messaggio, fai clic destro (o Ctrl+clic) sul file e scegli Apri.</p>
         </div>
       </li>
       <li>
@@ -349,35 +392,63 @@
       <li>
         <div>
           <h3>Segui l'installazione guidata</h3>
-          <p>Premi Continua e poi Installa. Il Mac chiede la password per copiare Scrivi nella cartella Applicazioni.</p>
+          <p>Premi Continua e poi Installa. Il Mac chiede la password per copiare Scrivo nella cartella Applicazioni. A fine installazione scegli la lingua.</p>
         </div>
       </li>
       <li>
         <div>
-          <h3>Apri Scrivi</h3>
-          <p>Lo trovi nella cartella Applicazioni e nel Launchpad. Per aprirlo più in fretta, trascina l'icona nel Dock.</p>
+          <h3>Apri Scrivo e attivalo</h3>
+          <p>Lo trovi nella cartella Applicazioni e nel Launchpad. Per attivarlo serve il codice di licenza: vedi la sezione <a href="#licenza">Licenza</a>.</p>
         </div>
       </li>
     </ol>
 
-    <div class="note"><b>Perché compare l'avviso?</b> Il pacchetto non è firmato con un certificato Apple Developer, quindi macOS chiede una conferma al primo avvio. Dopo averla data una volta, l'avviso non ricompare.</div>
+    <div class="note"><b>Perch√© compare l'avviso?</b> Il pacchetto non √® firmato con un certificato Apple Developer, quindi macOS chiede una conferma al primo avvio. Dopo averla data una volta, l'avviso non ricompare.</div>
 
     <div class="first">
       <div>
         <h3>Scrivi e formatta</h3>
-        <p>Clicca sulla pagina e inizia a scrivere. Seleziona il testo e usa la scheda Home per cambiare carattere, colore e allineamento.</p>
+        <p>Clicca sulla pagina e inizia a scrivere. Se non trovi un comando, cercalo nel campo ¬´Cosa vuoi fare?¬ª.</p>
       </div>
       <div>
         <h3>Salva il documento</h3>
-        <p>Premi <kbd>⌘S</kbd> e scegli dove salvarlo. Il file si salva in formato .docx con tutta la formattazione.</p>
+        <p>Premi <kbd>‚åòS</kbd> e scegli dove salvarlo. Il file si salva in formato .docx.</p>
       </div>
       <div>
         <h3>Riprendi a scrivere</h3>
-        <p>Dal menu File scegli Apri e seleziona il file salvato. Puoi continuare a scrivere da dove avevi lasciato.</p>
+        <p>Dal menu File scegli Apri e seleziona il file salvato, oppure uno dei 6 file recenti.</p>
       </div>
       <div>
-        <h3>Esporta in PDF</h3>
-        <p>Premi il pulsante PDF nella scheda Home oppure scegli Esporta PDF dal menu File.</p>
+        <h3>Chiedi aiuto</h3>
+        <p>Premi <kbd>F1</kbd> per aprire la guida con ricerca, o scrivi una domanda all'assistente.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="licenza" class="block">
+    <p class="label">Licenza</p>
+    <h2>Per usare Scrivo serve una licenza</h2>
+    <p class="intro">La licenza √® obbligatoria per il programma installato sul Mac. La ottieni scrivendo a questo indirizzo e ricevi un codice di attivazione da inserire alla prima apertura.</p>
+
+    <div class="mailbox">
+      <span class="mail" id="mailaddr">info.scrivoapp@gmail.com</span>
+      <button class="btn ghost" id="copybtn" type="button">Copia indirizzo</button>
+      <a class="btn" href="mailto:info.scrivoapp@gmail.com">Scrivi una mail</a>
+    </div>
+    <p class="copied" id="copied" role="status"></p>
+
+    <div class="first">
+      <div>
+        <h3>Per 1 Mac o per 3 Mac</h3>
+        <p>Il codice di licenza pu√≤ attivare Scrivo su un solo Mac oppure su tre.</p>
+      </div>
+      <div>
+        <h3>Serve internet per attivare</h3>
+        <p>Il codice viene controllato dal server delle licenze, quindi l'attivazione richiede una connessione.</p>
+      </div>
+      <div>
+        <h3>Gestione dalle Impostazioni</h3>
+        <p>In Impostazioni vedi la licenza attiva e trovi il pulsante Disattiva licenza.</p>
       </div>
     </div>
   </section>
@@ -387,24 +458,44 @@
     <h2>Prima di installare</h2>
     <div class="faq">
       <details>
-        <summary>Come riprendo un documento che ho già salvato?</summary>
-        <p>Apri Scrivi, scegli File, poi Apri, e seleziona il documento. Puoi continuare a scrivere da dove avevi lasciato.</p>
+        <summary>Come ottengo la licenza?</summary>
+        <p>Scrivi a info.scrivoapp@gmail.com. Riceverai un codice di attivazione, valido per 1 Mac o per 3 Mac, da inserire alla prima apertura di Scrivo.</p>
+      </details>
+      <details>
+        <summary>Cosa posso fare nella versione online?</summary>
+        <p>Scrivere e formattare un testo, con font, dimensioni, colori, elenchi, allineamenti e stili dei titoli. La bozza resta nel browser. Non si possono salvare file .docx, stampare, inserire tabelle e immagini. La versione online non richiede licenza n√© registrazione.</p>
+      </details>
+      <details>
+        <summary>Come riprendo un documento che ho gi√† salvato?</summary>
+        <p>Apri Scrivo, scegli File, poi Apri, e seleziona il documento oppure uno dei 6 file recenti. Puoi continuare a scrivere da dove avevi lasciato.</p>
       </details>
       <details>
         <summary>Posso aprire e salvare file .docx?</summary>
-        <p>Sì. Scrivi salva in formato .docx e riapre i file .docx, così puoi riprendere un documento quando vuoi. Per mandarlo a chi non ha Scrivi puoi anche esportarlo in PDF.</p>
+        <p>S√¨. Scrivo salva in formato .docx e riapre i file .docx, .html e .txt. Puoi anche esportare in PDF, HTML e testo semplice. Colonne, sfondo, filigrana e bordi pagina non vengono scritti nel .docx.</p>
+      </details>
+      <details>
+        <summary>Quali funzioni mancano?</summary>
+        <p>Non ci sono la stampa unione, le macro, un editor di equazioni avanzato e SmartArt. I commenti e le revisioni non vengono salvati come tali nel file .docx.</p>
       </details>
       <details>
         <summary>Funziona su Windows?</summary>
-        <p>Presto arriverà una versione per Windows. Per ora Scrivi è disponibile solo per macOS.</p>
+        <p>Presto arriver√† una versione per Windows. Per ora Scrivo √® disponibile solo per macOS.</p>
       </details>
       <details>
-        <summary>I miei documenti vengono inviati online?</summary>
-        <p>No. Scrivi funziona senza connessione e salva i file sul tuo Mac, nella cartella che scegli.</p>
+        <summary>Dove salva i miei documenti?</summary>
+        <p>Nella cartella che scegli sul tuo Mac. Internet serve per controllare la licenza.</p>
+      </details>
+      <details>
+        <summary>Dove trovo aiuto mentre scrivo?</summary>
+        <p>Premi F1 per la guida, con 69 voci e ricerca. L'assistente risponde a domande scritte liberamente e funziona senza internet. Se non capisce, scrivi a info.scrivoapp@gmail.com.</p>
+      </details>
+      <details>
+        <summary>Come aggiorno Scrivo?</summary>
+        <p>Scrivo viene aggiornato di continuo. Per avere le novit√†, torna alla sezione Scarica di questo sito e scarica la versione pi√π recente del pacchetto, poi installala come la prima volta.</p>
       </details>
       <details>
         <summary>Come si disinstalla?</summary>
-        <p>Apri la cartella Applicazioni e trascina Scrivi nel Cestino. I documenti che hai salvato restano dove li hai messi.</p>
+        <p>Apri la cartella Applicazioni e trascina Scrivo nel Cestino. I documenti che hai salvato restano dove li hai messi. Prima puoi disattivare la licenza dalle Impostazioni.</p>
       </details>
     </div>
   </section>
@@ -413,38 +504,305 @@
     <div class="download">
       <div>
         <p class="label" style="color: var(--band-muted)">Scarica</p>
-        <h2>Scarica Scrivi per Mac</h2>
+        <h2>Scarica Scrivo per Mac</h2>
         <p>Il pacchetto di installazione si trova in una cartella su Google Drive. Nella cartella che si apre scegli il file con estensione <b>.pkg</b> e scaricalo.</p>
-        <p>Quando il download è finito, segui i passi della sezione <a class="inline" href="#installazione">Installazione</a>.</p>
-        <p>Presto arriverà anche una versione per Windows.</p>
+        <p class="need">Per utilizzare Scrivo √® obbligatoria una licenza: scrivi a info.scrivoapp@gmail.com. <a class="inline" href="#licenza">Dettagli</a></p>
+        <p class="need">Scrivo viene aggiornato di continuo. Scarica sempre la versione pi√π recente e controlla questa pagina di download ogni volta che vuoi aggiornare.</p>
+        <p>Prima di scaricare puoi <a class="inline" href="#prova">provare la versione online</a>. Quando il download √® finito, segui i passi della sezione <a class="inline" href="#installazione">Installazione</a>. Presto arriver√† anche una versione per Windows.</p>
       </div>
       <div>
-        <a class="dl-btn" href="https://drive.google.com/drive/folders/1EC2BvIG-0SQnxvw2FHK2YnvqX-F_6LOZ?usp=drive_link" target="_blank" rel="noopener noreferrer">Apri la cartella<small>file .pkg per macOS</small></a>
+        <a class="dl-btn" href="https://drive.google.com/drive/folders/1hhphDPm_KJTXMmgtH-2EB1OPEmzgQz17?usp=sharing" target="_blank" rel="noopener noreferrer">Apri la cartella<small>file .pkg per macOS</small></a>
       </div>
     </div>
   </section>
 
 </main>
+</div>
 
-<footer class="wrap">
-  Scrivi è un programma indipendente per macOS. Una versione per Windows arriverà presto.
+<div id="app-view" class="wrap" hidden>
+  <section id="prova">
+    <div class="try-head">
+      <p class="label">Versione di prova online</p>
+      <h1>Prova ora Scrivo</h1>
+      <p class="lead">Una versione limitata di Scrivo che funziona nel browser, senza installare nulla e senza licenza. Scrivi e formatta: la bozza resta in questo browser, anche se chiudi la pagina.</p>
+    </div>
+
+    <div class="live">
+      <div class="l-title">
+        <div><b>Scrivo</b><span class="sub">Prova online</span></div>
+        <div class="acts">
+          <button type="button" id="copytext">Copia testo</button>
+          <button type="button" id="newdoc">Nuovo</button>
+        </div>
+      </div>
+      <div class="l-tabs" aria-label="Schede dell'app">
+        <span class="on">Home</span>
+        <span title="Disponibile nell'app per Mac">Inserisci</span>
+        <span title="Disponibile nell'app per Mac">Layout</span>
+        <span title="Disponibile nell'app per Mac">Riferimenti</span>
+        <span title="Disponibile nell'app per Mac">Revisione</span>
+      </div>
+      <div class="l-ribbon" role="toolbar" aria-label="Formattazione">
+        <div class="l-g">
+          <button class="tb" type="button" data-cmd="undo" title="Annulla" aria-label="Annulla">‚Ü∂</button>
+          <button class="tb" type="button" data-cmd="redo" title="Ripeti" aria-label="Ripeti">‚Ü∑</button>
+        </div>
+        <div class="l-g">
+          <select class="sel" id="fontsel" aria-label="Carattere">
+            <option>Georgia</option><option>Arial</option><option>Helvetica Neue</option><option>Times New Roman</option><option>Courier New</option><option>Verdana</option>
+          </select>
+          <select class="sel" id="sizesel" aria-label="Dimensione">
+            <option>10</option><option>11</option><option selected>12</option><option>14</option><option>18</option><option>24</option><option>36</option>
+          </select>
+        </div>
+        <div class="l-g">
+          <button class="tb" type="button" data-cmd="bold" title="Grassetto" aria-label="Grassetto"><b>G</b></button>
+          <button class="tb" type="button" data-cmd="italic" title="Corsivo" aria-label="Corsivo"><i>C</i></button>
+          <button class="tb" type="button" data-cmd="underline" title="Sottolineato" aria-label="Sottolineato"><u>S</u></button>
+          <button class="tb" type="button" data-cmd="strikeThrough" title="Barrato" aria-label="Barrato"><s>ab</s></button>
+          <label class="col" title="Colore del testo"><span aria-hidden="true">A</span><i id="foreswatch" style="background:#c0392b"></i><input type="color" id="forecol" value="#c0392b" aria-label="Colore del testo"></label>
+          <label class="col" title="Evidenziatore"><span aria-hidden="true">‚úé</span><i id="backswatch" style="background:#ffe94d"></i><input type="color" id="backcol" value="#ffe94d" aria-label="Evidenziatore"></label>
+          <button class="tb" type="button" data-cmd="removeFormat" title="Cancella formato" aria-label="Cancella formato">Tx</button>
+        </div>
+        <div class="l-g">
+          <button class="tb" type="button" data-cmd="insertUnorderedList" title="Elenco puntato" aria-label="Elenco puntato">‚Ä¢&#8202;‚â°</button>
+          <button class="tb" type="button" data-cmd="insertOrderedList" title="Elenco numerato" aria-label="Elenco numerato">1.&#8202;‚â°</button>
+          <button class="tb" type="button" data-cmd="outdent" title="Riduci rientro" aria-label="Riduci rientro">‚á§</button>
+          <button class="tb" type="button" data-cmd="indent" title="Aumenta rientro" aria-label="Aumenta rientro">‚á•</button>
+        </div>
+        <div class="l-g">
+          <button class="tb" type="button" data-cmd="justifyLeft" title="A sinistra" aria-label="Allinea a sinistra">‚Øá</button>
+          <button class="tb" type="button" data-cmd="justifyCenter" title="Al centro" aria-label="Centra">‚â°</button>
+          <button class="tb" type="button" data-cmd="justifyRight" title="A destra" aria-label="Allinea a destra">‚Øà</button>
+          <button class="tb" type="button" data-cmd="justifyFull" title="Giustificato" aria-label="Giustifica">‚ò∞</button>
+        </div>
+        <div class="l-g">
+          <select class="sel" id="stylesel" aria-label="Stile">
+            <option value="p">Normale</option><option value="h1">Titolo 1</option><option value="h2">Titolo 2</option><option value="h3">Titolo 3</option><option value="blockquote">Citazione</option>
+          </select>
+        </div>
+      </div>
+      <div class="l-desk">
+        <div class="page" id="page" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Pagina del documento"></div>
+      </div>
+      <div class="l-status">
+        <span id="wc">0 parole</span>
+        <span id="saved" role="status">Bozza salvata nel browser</span>
+      </div>
+    </div>
+
+    <div class="compare">
+      <div>
+        <h3>Nella versione di prova</h3>
+        <ul>
+          <li>Font, dimensioni, colori ed evidenziatore</li>
+          <li>Grassetto, corsivo, sottolineato, barrato</li>
+          <li>Elenchi, rientri e allineamenti</li>
+          <li>Stili Titolo 1, 2, 3 e Citazione</li>
+          <li>Annulla e ripeti, conteggio parole, bozza nel browser</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Solo nell'app per Mac</h3>
+        <ul>
+          <li>Salvataggio e apertura di file .docx, esportazione in PDF e stampa</li>
+          <li>Tabelle, immagini, forme e grafici</li>
+          <li>Sommario, note a pi√® di pagina e bibliografia</li>
+          <li>Commenti, traccia modifiche e ortografia</li>
+          <li>Guida, assistente e molto altro</li>
+        </ul>
+        <div class="cta">
+          <a class="btn" href="#scarica">Scarica per Mac</a>
+          <a class="btn ghost" href="#licenza">Richiedi la licenza</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  Scrivo √® un programma indipendente per macOS. Una versione per Windows arriver√† presto. Per la licenza e per le domande: info.scrivoapp@gmail.com
 </footer>
 
 <script>
   (function () {
+    var siteView = document.getElementById('site-view');
+    var appView = document.getElementById('app-view');
     var links = Array.prototype.slice.call(document.querySelectorAll('nav a[data-tab]'));
-    var ids = links.map(function (a) { return a.getAttribute('href').slice(1); });
     function mark(id) {
       links.forEach(function (a) {
         a.setAttribute('aria-current', a.getAttribute('href') === '#' + id ? 'true' : 'false');
       });
     }
-    mark('panoramica');
-    if (!('IntersectionObserver' in window)) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) mark(e.target.id); });
-    }, { rootMargin: '-30% 0px -60% 0px' });
-    ids.forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+
+    /* Routing on the hash: #prova shows the online editor, anything else shows the site. */
+    function route() {
+      var h = (location.hash || '').slice(1);
+      if (h === 'prova') {
+        siteView.hidden = true; appView.hidden = false;
+        mark('prova');
+        window.scrollTo(0, 0);
+        var p = document.getElementById('page');
+        if (p) setTimeout(function () { try { p.focus({ preventScroll: true }); } catch (e) {} }, 0);
+      } else {
+        appView.hidden = true; siteView.hidden = false;
+        var el = h && document.getElementById(h);
+        if (el) { el.scrollIntoView(); mark(h); } else { window.scrollTo(0, 0); mark('panoramica'); }
+      }
+    }
+    window.addEventListener('hashchange', route);
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        if (siteView.hidden) return;
+        entries.forEach(function (e) { if (e.isIntersecting) mark(e.target.id); });
+      }, { rootMargin: '-30% 0px -60% 0px' });
+      ['panoramica', 'funzioni', 'installazione', 'licenza', 'domande', 'scarica'].forEach(function (id) {
+        var el = document.getElementById(id); if (el) io.observe(el);
+      });
+    }
+
+    /* Copy licence address */
+    var btn = document.getElementById('copybtn');
+    var out = document.getElementById('copied');
+    var addr = document.getElementById('mailaddr');
+    function selectNode(node) {
+      var r = document.createRange(); r.selectNodeContents(node);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+    btn.addEventListener('click', function () {
+      var ok = function () { out.textContent = 'Indirizzo copiato.'; };
+      var fail = function () { selectNode(addr); out.textContent = 'Indirizzo selezionato: premi Cmd+C per copiarlo.'; };
+      try { navigator.clipboard.writeText(addr.textContent).then(ok, fail); } catch (e) { fail(); }
+    });
+
+    /* ---- Limited online editor ---- */
+    var page = document.getElementById('page');
+    var wc = document.getElementById('wc');
+    var saved = document.getElementById('saved');
+    var KEY = 'scrivo-prova-bozza';
+    var SAMPLE =
+      '<h1>Prova di Scrivo</h1>' +
+      '<p>Questo √® un testo di esempio. Selezionalo e usa la barra in alto per cambiare carattere, dimensione e colore, oppure cancellalo e scrivi il tuo.</p>' +
+      '<h2>Cosa puoi provare</h2>' +
+      '<ul><li>Grassetto, corsivo e sottolineato</li><li>Elenchi puntati e numerati</li><li>Allineamento e rientri</li></ul>' +
+      '<blockquote>La bozza resta in questo browser anche se chiudi la pagina.</blockquote>';
+    var lastRange = null, pendingPt = '12', timer = null;
+
+    function load() {
+      var html = null;
+      try { html = localStorage.getItem(KEY); } catch (e) {}
+      page.innerHTML = html || SAMPLE;
+      count();
+    }
+    function persist() {
+      try { localStorage.setItem(KEY, page.innerHTML); saved.textContent = 'Bozza salvata nel browser'; }
+      catch (e) { saved.textContent = 'Bozza non salvata: il browser blocca la memoria locale'; }
+    }
+    function count() {
+      var t = page.innerText.trim();
+      var n = t ? t.split(/\s+/).length : 0;
+      wc.textContent = n + (n === 1 ? ' parola' : ' parole') + ' ¬∑ ' + t.length + ' caratteri';
+    }
+    function fixFonts() {
+      page.querySelectorAll('font[size="7"]').forEach(function (f) {
+        f.style.fontSize = pendingPt + 'pt';
+        f.removeAttribute('size');
+      });
+    }
+    function changed() {
+      fixFonts(); count();
+      saved.textContent = 'Salvataggio‚Ä¶';
+      clearTimeout(timer); timer = setTimeout(persist, 400);
+    }
+
+    document.addEventListener('selectionchange', function () {
+      var s = window.getSelection();
+      if (s.rangeCount && page.contains(s.anchorNode)) {
+        lastRange = s.getRangeAt(0).cloneRange();
+        updateState();
+      }
+    });
+    function focusPage() {
+      page.focus({ preventScroll: true });
+      if (lastRange) { var s = window.getSelection(); s.removeAllRanges(); s.addRange(lastRange); }
+    }
+    function run(cmd, val) {
+      focusPage();
+      try { document.execCommand(cmd, false, val == null ? null : val); } catch (e) {}
+      changed(); updateState();
+    }
+    function updateState() {
+      ['bold', 'italic', 'underline', 'strikeThrough', 'insertUnorderedList', 'insertOrderedList', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'].forEach(function (c) {
+        var b = document.querySelector('.tb[data-cmd="' + c + '"]');
+        if (!b) return;
+        var on = false; try { on = document.queryCommandState(c); } catch (e) {}
+        b.classList.toggle('on', on);
+      });
+      var blk = ''; try { blk = (document.queryCommandValue('formatBlock') || '').toLowerCase(); } catch (e) {}
+      var sel = document.getElementById('stylesel');
+      if (['h1', 'h2', 'h3', 'blockquote', 'p'].indexOf(blk) > -1) sel.value = blk;
+    }
+
+    document.querySelectorAll('.tb[data-cmd]').forEach(function (b) {
+      b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      b.addEventListener('click', function () { run(b.getAttribute('data-cmd')); });
+    });
+    document.getElementById('fontsel').addEventListener('change', function (e) { run('fontName', e.target.value); });
+    document.getElementById('sizesel').addEventListener('change', function (e) {
+      pendingPt = e.target.value; run('fontSize', '7');
+    });
+    document.getElementById('stylesel').addEventListener('change', function (e) { run('formatBlock', e.target.value); });
+    document.getElementById('forecol').addEventListener('input', function (e) {
+      document.getElementById('foreswatch').style.background = e.target.value; run('foreColor', e.target.value);
+    });
+    document.getElementById('backcol').addEventListener('input', function (e) {
+      document.getElementById('backswatch').style.background = e.target.value; run('hiliteColor', e.target.value);
+    });
+
+    page.addEventListener('input', changed);
+    /* Delete a selection first, so typed or pasted text does not inherit the heading's computed size. */
+    function hasSelection() {
+      var s = window.getSelection();
+      return s.rangeCount > 0 && !s.isCollapsed && page.contains(s.anchorNode);
+    }
+    page.addEventListener('beforeinput', function (e) {
+      if (e.inputType === 'insertText' && e.data && hasSelection()) {
+        e.preventDefault();
+        document.execCommand('delete');
+        document.execCommand('insertText', false, e.data);
+      }
+    });
+    page.addEventListener('paste', function (e) {
+      e.preventDefault();
+      var txt = (e.clipboardData || window.clipboardData).getData('text/plain');
+      if (hasSelection()) document.execCommand('delete');
+      document.execCommand('insertText', false, txt);
+    });
+
+    /* New document: two-step confirm inside the page */
+    var newBtn = document.getElementById('newdoc'), newTimer = null;
+    newBtn.addEventListener('click', function () {
+      if (newBtn.getAttribute('data-arm') !== '1') {
+        newBtn.setAttribute('data-arm', '1'); newBtn.textContent = 'Conferma: cancella tutto';
+        clearTimeout(newTimer);
+        newTimer = setTimeout(function () { newBtn.removeAttribute('data-arm'); newBtn.textContent = 'Nuovo'; }, 4000);
+        return;
+      }
+      clearTimeout(newTimer); newBtn.removeAttribute('data-arm'); newBtn.textContent = 'Nuovo';
+      page.innerHTML = '<p><br></p>'; changed(); page.focus();
+    });
+
+    /* Copy plain text */
+    var copyBtn = document.getElementById('copytext');
+    copyBtn.addEventListener('click', function () {
+      var done = function () { saved.textContent = 'Testo copiato negli appunti'; };
+      var fail = function () { selectNode(page); saved.textContent = 'Testo selezionato: premi Cmd+C per copiarlo'; };
+      try { navigator.clipboard.writeText(page.innerText).then(done, fail); } catch (e) { fail(); }
+    });
+
+    load();
+    route();
   })();
 </script>
 
