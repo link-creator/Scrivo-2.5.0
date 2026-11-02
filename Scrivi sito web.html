@@ -1,0 +1,451 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Scrivi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* Layout: sticky tab bar, hero with a drawn app window on an A4 sheet, ruled sections, dark download band. */
+  :root {
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --ink: #111a2e;
+    --muted: #4d5b75;
+    --line: #d5dce8;
+    --accent: #ffd23f;
+    --on-accent: #111a2e;
+    --btn-bg: #111a2e;
+    --btn-fg: #ffffff;
+    --link: #1d3f8f;
+    --band-bg: #111a2e;
+    --band-fg: #f3f5fa;
+    --band-muted: #aab6cc;
+    --paper: #ffffff;
+    --paper-ink: #1c1c1c;
+    --app-bar: #2b579a;
+    --app-ribbon: #f3f3f3;
+    --app-line: #d4d4d4;
+    --app-desk: #e6e6e6;
+    --font-display: "Bricolage Grotesque", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+    --font-body: "IBM Plex Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1320; --surface: #151d2f; --ink: #eef2f9; --muted: #a0aec6; --line: #26314a;
+      --btn-bg: #ffd23f; --btn-fg: #111a2e; --link: #8fb0ff; --band-bg: #17213a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1320; --surface: #151d2f; --ink: #eef2f9; --muted: #a0aec6; --line: #26314a;
+    --btn-bg: #ffd23f; --btn-fg: #111a2e; --link: #8fb0ff; --band-bg: #17213a;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0;
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+  a { color: var(--link); }
+  :focus-visible { outline: 3px solid var(--link); outline-offset: 3px; border-radius: 3px; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+
+  /* Tab bar */
+  header.bar {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+    background: var(--bg); border-bottom: 1px solid var(--line);
+    margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+    margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; padding-block: 10px; }
+  .brand { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: -0.02em; text-decoration: none; color: var(--ink); }
+  .brand span { background: linear-gradient(transparent 58%, var(--accent) 58% 92%, transparent 92%); padding: 0 2px; }
+  nav { display: flex; flex-wrap: wrap; gap: 4px; }
+  nav a {
+    font-family: var(--font-mono); font-size: 13px; text-decoration: none; color: var(--muted);
+    padding: 6px 12px; border-radius: 6px; border: 1px solid transparent;
+  }
+  nav a:hover { color: var(--ink); border-color: var(--line); }
+  nav a[aria-current="true"] { color: var(--ink); background: var(--surface); border-color: var(--line); }
+  nav a.dl { background: var(--btn-bg); color: var(--btn-fg); font-weight: 500; }
+  nav a.dl:hover { color: var(--btn-fg); border-color: var(--btn-bg); }
+
+  section { scroll-margin-top: 110px; }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 1.08; margin: 0; text-wrap: balance; }
+  .label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+  p { margin: 0; }
+  .measure { max-width: 62ch; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; align-items: center; padding-block: 56px 72px; }
+  .hero h1 { font-size: clamp(40px, 6.2vw, 72px); font-weight: 800; }
+  .hero .lead { margin-top: 22px; font-size: 19px; color: var(--muted); max-width: 46ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .btn {
+    display: inline-block; font-family: var(--font-body); font-weight: 600; font-size: 16px; text-decoration: none;
+    padding: 13px 22px; border-radius: 8px; border: 2px solid var(--btn-bg); background: var(--btn-bg); color: var(--btn-fg);
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .btn.ghost:hover { border-color: var(--ink); }
+  .meta { margin-top: 22px; font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+
+  /* Drawn app window */
+  .figure { min-width: 0; }
+  .app { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 18px 40px -18px rgba(10, 20, 45, 0.45); background: var(--app-desk); }
+  .app .title { background: var(--app-bar); color: #fff; font-size: 12px; padding: 8px 12px 8px 64px; position: relative; display: flex; gap: 10px; }
+  .app .title::before { content: ""; position: absolute; left: 12px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: #ff5f57; box-shadow: 16px 0 0 #febc2e, 32px 0 0 #28c840; }
+  .app .title b { font-weight: 600; }
+  .app .title span { opacity: 0.8; }
+  .app .tabs { background: var(--app-bar); display: flex; gap: 2px; padding: 0 10px; font-size: 12px; }
+  .app .tabs i { font-style: normal; color: #fff; padding: 5px 12px; border-radius: 4px 4px 0 0; }
+  .app .tabs i.on { background: var(--app-ribbon); color: var(--app-bar); }
+  .app .ribbon { background: var(--app-ribbon); border-bottom: 1px solid var(--app-line); padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 12px; color: #222; }
+  .app .ribbon .g { display: flex; gap: 4px; align-items: center; padding-right: 12px; border-right: 1px solid var(--app-line); }
+  .app .ribbon .g:last-child { border: 0; padding: 0; }
+  .app .chip { background: #fff; border: 1px solid var(--app-line); border-radius: 4px; padding: 1px 8px; min-height: 22px; display: inline-flex; align-items: center; }
+  .app .key { width: 24px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; }
+  .app .key.on { background: #cfdcf0; border: 1px solid #9db6dd; }
+  .app .sw { width: 18px; height: 18px; border-radius: 3px; border: 1px solid var(--app-line); }
+  .desk { padding: 22px 18px 24px; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; gap: 6px 8px; justify-content: center; }
+  .dim-h { grid-column: 2; display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #555; width: min(100%, 300px); margin: 0 auto; }
+  .dim-h::before, .dim-h::after { content: ""; flex: 1; height: 1px; background: #888; }
+  .dim-v { grid-row: 2; writing-mode: vertical-rl; transform: rotate(180deg); display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #555; justify-self: center; }
+  .dim-v::before, .dim-v::after { content: ""; flex: 1; width: 1px; background: #888; }
+  .sheet {
+    grid-column: 2; grid-row: 2; width: min(100%, 300px); aspect-ratio: 210 / 297; margin: 0 auto; background: var(--paper); color: var(--paper-ink);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3); padding: 12%; position: relative; font-family: Georgia, "Times New Roman", serif; font-size: 11px; line-height: 1.5; overflow: hidden;
+  }
+  .sheet::after { content: ""; position: absolute; inset: 7.5% 9%; border: 1px dashed rgba(43, 87, 154, 0.35); pointer-events: none; }
+  .sheet h4 { font-family: Georgia, serif; font-size: 17px; margin: 0 0 8px; line-height: 1.15; }
+  .sheet p { margin: 0 0 7px; }
+  .sheet mark { background: #ffe94d; color: inherit; }
+  .sheet ul { margin: 0 0 7px; padding-left: 16px; }
+  .sheet hr { border: 0; border-top: 1px solid #999; margin: 8px 0; }
+  .caption { margin-top: 10px; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+  /* Quick facts */
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px 40px; padding-block: 36px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .facts h3 { font-size: 22px; margin-bottom: 8px; }
+  .facts p { color: var(--muted); font-size: 16px; }
+
+  /* Sections */
+  .block { padding-block: 84px 0; }
+  .block h2 { font-size: clamp(30px, 4.4vw, 46px); font-weight: 800; margin-bottom: 18px; }
+  .block .intro { color: var(--muted); max-width: 62ch; }
+
+  .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px 36px; margin-top: 44px; }
+  .group { border-top: 3px solid var(--ink); padding-top: 14px; min-width: 0; }
+  .group h3 { font-size: 24px; margin-bottom: 4px; }
+  .group .sub { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 16px; }
+  .group li { padding-left: 16px; position: relative; }
+  .group li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 8px; height: 2px; background: var(--ink); }
+  kbd { font-family: var(--font-mono); font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+
+  .steps { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 0; counter-reset: s; max-width: 760px; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; padding-block: 20px; border-top: 1px solid var(--line); }
+  .steps li:last-child { border-bottom: 1px solid var(--line); }
+  .steps li::before { content: counter(s); font-family: var(--font-mono); font-size: 28px; font-weight: 500; color: var(--muted); line-height: 1.2; }
+  .steps h3 { font-size: 20px; margin-bottom: 4px; }
+  .steps p { color: var(--muted); font-size: 16px; }
+  .note { margin-top: 28px; max-width: 760px; padding: 16px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; font-size: 16px; }
+  .note b { font-weight: 600; }
+
+  .first { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin-top: 56px; }
+  .first h3 { font-size: 20px; margin-bottom: 6px; }
+  .first p { color: var(--muted); font-size: 16px; }
+
+  details { border-top: 1px solid var(--line); max-width: 800px; }
+  details:last-of-type { border-bottom: 1px solid var(--line); }
+  summary { cursor: pointer; list-style: none; padding: 18px 40px 18px 0; font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; position: relative; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; position: absolute; right: 4px; top: 14px; font-family: var(--font-mono); font-size: 24px; font-weight: 400; color: var(--muted); }
+  details[open] summary::after { content: "\2212"; }
+  details p { padding: 0 0 20px; color: var(--muted); max-width: 64ch; font-size: 16px; }
+  .faq { margin-top: 36px; }
+
+  /* Download */
+  .download { margin-top: 96px; background: var(--band-bg); color: var(--band-fg); border-radius: 14px; padding: clamp(28px, 5vw, 60px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: center; }
+  .download h2 { font-size: clamp(30px, 4.6vw, 48px); font-weight: 800; margin: 0 0 14px; }
+  .download p { color: var(--band-muted); max-width: 56ch; }
+  .download p + p { margin-top: 10px; }
+  .download a.inline { color: var(--accent); }
+  .dl-btn { display: inline-block; text-align: center; background: var(--accent); color: var(--on-accent); font-weight: 600; font-size: 18px; padding: 18px 30px; border-radius: 10px; text-decoration: none; }
+  .dl-btn small { display: block; font-family: var(--font-mono); font-weight: 400; font-size: 12px; margin-top: 2px; opacity: 0.8; }
+  .dl-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+  .download :focus-visible { outline-color: var(--accent); }
+
+  footer { padding-block: 56px 44px; color: var(--muted); font-size: 14px; max-width: 70ch; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: minmax(0, 1fr); gap: 36px; padding-block: 36px 52px; }
+    .download { grid-template-columns: minmax(0, 1fr); }
+    .block { padding-top: 64px; }
+  }
+  @media (max-width: 520px) {
+    body { font-size: 16px; }
+    .app .ribbon .g:nth-child(n+4) { display: none; }
+    .desk { padding: 16px 10px 18px; }
+    .steps li { grid-template-columns: 40px minmax(0, 1fr); }
+    .dl-btn { display: block; }
+  }
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#panoramica"><span>Scrivi</span></a>
+    <nav aria-label="Sezioni del sito">
+      <a href="#panoramica" data-tab>Panoramica</a>
+      <a href="#funzioni" data-tab>Funzioni</a>
+      <a href="#installazione" data-tab>Installazione</a>
+      <a href="#domande" data-tab>Domande</a>
+      <a href="#scarica" data-tab class="dl">Scarica</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="panoramica">
+    <div class="hero">
+      <div>
+        <p class="label">Videoscrittura per macOS</p>
+        <h1>Un foglio A4 sempre aperto sul tuo Mac.</h1>
+        <p class="lead">Scrivi è un programma per scrivere lettere, relazioni e appunti. Ha la pagina A4, la barra con le schede e gli strumenti di formattazione che servono nel lavoro di tutti i giorni.</p>
+        <div class="actions">
+          <a class="btn" href="#scarica">Scarica Scrivi</a>
+          <a class="btn ghost" href="#funzioni">Vedi le funzioni</a>
+        </div>
+        <p class="meta">macOS · Windows in arrivo · funziona senza connessione</p>
+      </div>
+
+      <div class="figure">
+        <div class="app" role="img" aria-label="Illustrazione della finestra di Scrivi con la barra delle schede e una pagina A4 con un documento di esempio">
+          <div class="title"><b>Scrivi</b><span>Relazione.docx</span></div>
+          <div class="tabs"><i class="on">Home</i><i>Inserisci</i><i>Layout</i></div>
+          <div class="ribbon">
+            <div class="g"><span class="chip">Georgia</span><span class="chip">12</span></div>
+            <div class="g"><span class="key"><b>G</b></span><span class="key"><i>C</i></span><span class="key on"><u>S</u></span><span class="sw" style="background:#c0392b"></span><span class="sw" style="background:#ffe94d"></span></div>
+            <div class="g"><span class="key">•&#8202;≡</span><span class="key">1.&#8202;≡</span></div>
+            <div class="g"><span class="key">⯇</span><span class="key on">≡</span><span class="key">⯈</span><span class="key">☰</span></div>
+            <div class="g"><span class="chip">Titolo 1</span></div>
+          </div>
+          <div class="desk">
+            <div class="dim-h">210&nbsp;mm</div>
+            <div class="dim-v">297&nbsp;mm</div>
+            <div class="sheet">
+              <h4>Relazione di fine anno</h4>
+              <p>Quest'anno il gruppo ha concluso tre progetti e <mark>ha ridotto i tempi di consegna</mark> di due settimane.</p>
+              <ul><li>Obiettivi raggiunti</li><li>Risorse impiegate</li><li>Piano per il prossimo anno</li></ul>
+              <hr>
+              <p>Il testo resta nei margini della pagina, come sul foglio stampato.</p>
+            </div>
+          </div>
+        </div>
+        <p class="caption">Illustrazione dell'interfaccia. Il foglio è in scala A4.</p>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div>
+        <h3>Pagina A4</h3>
+        <p>Scrivi su un foglio con margini e interlinea regolabili, con lo zoom da 50 a 200 per cento.</p>
+      </div>
+      <div>
+        <h3>Salva e riprendi</h3>
+        <p>Il documento si salva in un file .docx che puoi riaprire in Scrivi per continuare a scrivere, con testo, formattazione e immagini.</p>
+      </div>
+      <div>
+        <h3>Esporta e stampa</h3>
+        <p>Con un clic crei un PDF del documento, oppure lo mandi in stampa con la scorciatoia <kbd>⌘P</kbd>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="funzioni" class="block">
+    <p class="label">Funzioni</p>
+    <h2>Tutto quello che c'è nelle schede</h2>
+    <p class="intro">Gli strumenti sono divisi in tre schede, come nei programmi di videoscrittura più diffusi. Le funzioni di file e di visualizzazione sono nel menu e nella barra in basso.</p>
+
+    <div class="groups">
+      <div class="group">
+        <h3>Home</h3>
+        <p class="sub">Testo e paragrafo</p>
+        <ul>
+          <li>Sette caratteri: Calibri, Arial, Helvetica Neue, Georgia, Times New Roman, Courier New, Verdana</li>
+          <li>Sei dimensioni, da 10 a 36</li>
+          <li>Grassetto, corsivo, sottolineato e barrato</li>
+          <li>Colore del testo ed evidenziatore</li>
+          <li>Elenchi puntati e numerati, con rientro</li>
+          <li>Allineamento a sinistra, al centro, a destra e giustificato</li>
+          <li>Stili Titolo 1, 2, 3 e Citazione</li>
+          <li>Annulla e ripeti</li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Inserisci</h3>
+        <p class="sub">Contenuti nella pagina</p>
+        <ul>
+          <li>Immagini dal tuo Mac, incorporate nel documento</li>
+          <li>Linea orizzontale per separare le parti del testo</li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Layout</h3>
+        <p class="sub">Aspetto della pagina</p>
+        <ul>
+          <li>Margini normali, stretti o larghi</li>
+          <li>Interlinea 1,0, 1,15, 1,5 o 2,0</li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>File e vista</h3>
+        <p class="sub">Menu e barra di stato</p>
+        <ul>
+          <li>Nuovo documento <kbd>⌘N</kbd></li>
+          <li>Apri <kbd>⌘O</kbd> e Salva <kbd>⌘S</kbd> in formato .docx</li>
+          <li>Esporta in PDF</li>
+          <li>Stampa <kbd>⌘P</kbd></li>
+          <li>Zoom da 50 a 200 per cento</li>
+          <li>Conteggio delle parole sempre visibile</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="installazione" class="block">
+    <p class="label">Installazione</p>
+    <h2>Pronto in cinque passi</h2>
+    <p class="intro">Scrivi si installa con un pacchetto <b>.pkg</b>, come la maggior parte dei programmi per Mac che non vengono dall'App Store.</p>
+
+    <ol class="steps">
+      <li>
+        <div>
+          <h3>Scarica il pacchetto</h3>
+          <p>Vai alla sezione <a href="#scarica">Scarica</a> e salva il file con estensione .pkg nella cartella Download.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Aprilo con un doppio clic</h3>
+          <p>Se macOS dice che non può verificare lo sviluppatore, chiudi il messaggio, fai clic destro (o Ctrl+clic) sul file e scegli Apri.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Se il blocco resta, consenti l'apertura</h3>
+          <p>Apri Impostazioni di Sistema, poi Privacy e sicurezza. In fondo alla pagina premi Apri comunque accanto al nome del pacchetto.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Segui l'installazione guidata</h3>
+          <p>Premi Continua e poi Installa. Il Mac chiede la password per copiare Scrivi nella cartella Applicazioni.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Apri Scrivi</h3>
+          <p>Lo trovi nella cartella Applicazioni e nel Launchpad. Per aprirlo più in fretta, trascina l'icona nel Dock.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="note"><b>Perché compare l'avviso?</b> Il pacchetto non è firmato con un certificato Apple Developer, quindi macOS chiede una conferma al primo avvio. Dopo averla data una volta, l'avviso non ricompare.</div>
+
+    <div class="first">
+      <div>
+        <h3>Scrivi e formatta</h3>
+        <p>Clicca sulla pagina e inizia a scrivere. Seleziona il testo e usa la scheda Home per cambiare carattere, colore e allineamento.</p>
+      </div>
+      <div>
+        <h3>Salva il documento</h3>
+        <p>Premi <kbd>⌘S</kbd> e scegli dove salvarlo. Il file si salva in formato .docx con tutta la formattazione.</p>
+      </div>
+      <div>
+        <h3>Riprendi a scrivere</h3>
+        <p>Dal menu File scegli Apri e seleziona il file salvato. Puoi continuare a scrivere da dove avevi lasciato.</p>
+      </div>
+      <div>
+        <h3>Esporta in PDF</h3>
+        <p>Premi il pulsante PDF nella scheda Home oppure scegli Esporta PDF dal menu File.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="domande" class="block">
+    <p class="label">Domande frequenti</p>
+    <h2>Prima di installare</h2>
+    <div class="faq">
+      <details>
+        <summary>Come riprendo un documento che ho già salvato?</summary>
+        <p>Apri Scrivi, scegli File, poi Apri, e seleziona il documento. Puoi continuare a scrivere da dove avevi lasciato.</p>
+      </details>
+      <details>
+        <summary>Posso aprire e salvare file .docx?</summary>
+        <p>Sì. Scrivi salva in formato .docx e riapre i file .docx, così puoi riprendere un documento quando vuoi. Per mandarlo a chi non ha Scrivi puoi anche esportarlo in PDF.</p>
+      </details>
+      <details>
+        <summary>Funziona su Windows?</summary>
+        <p>Presto arriverà una versione per Windows. Per ora Scrivi è disponibile solo per macOS.</p>
+      </details>
+      <details>
+        <summary>I miei documenti vengono inviati online?</summary>
+        <p>No. Scrivi funziona senza connessione e salva i file sul tuo Mac, nella cartella che scegli.</p>
+      </details>
+      <details>
+        <summary>Come si disinstalla?</summary>
+        <p>Apri la cartella Applicazioni e trascina Scrivi nel Cestino. I documenti che hai salvato restano dove li hai messi.</p>
+      </details>
+    </div>
+  </section>
+
+  <section id="scarica" class="block">
+    <div class="download">
+      <div>
+        <p class="label" style="color: var(--band-muted)">Scarica</p>
+        <h2>Scarica Scrivi per Mac</h2>
+        <p>Il pacchetto di installazione si trova in una cartella su Google Drive. Nella cartella che si apre scegli il file con estensione <b>.pkg</b> e scaricalo.</p>
+        <p>Quando il download è finito, segui i passi della sezione <a class="inline" href="#installazione">Installazione</a>.</p>
+        <p>Presto arriverà anche una versione per Windows.</p>
+      </div>
+      <div>
+        <a class="dl-btn" href="https://drive.google.com/drive/folders/1EC2BvIG-0SQnxvw2FHK2YnvqX-F_6LOZ?usp=drive_link" target="_blank" rel="noopener noreferrer">Apri la cartella<small>file .pkg per macOS</small></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  Scrivi è un programma indipendente per macOS. Una versione per Windows arriverà presto.
+</footer>
+
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav a[data-tab]'));
+    var ids = links.map(function (a) { return a.getAttribute('href').slice(1); });
+    function mark(id) {
+      links.forEach(function (a) {
+        a.setAttribute('aria-current', a.getAttribute('href') === '#' + id ? 'true' : 'false');
+      });
+    }
+    mark('panoramica');
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) mark(e.target.id); });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+  })();
+</script>
+
+</body></html>
